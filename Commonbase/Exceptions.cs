@@ -13,3 +13,8 @@ public class CommonbaseException : Exception
     InvocationId = invocationId ?? string.Empty;
   }
 }
+
+public class StreamingResponseException : Exception
+{
+  public StreamingResponseException(string message) : base(message) { }
+}

@@ -86,4 +86,40 @@ public class CommonbaseClient
 
     return json.ToObject<CompletionResponse>()!;
   }
+
+  public async IAsyncEnumerable<CompletionResponse> StreamCompletionAsync(
+    string prompt,
+    string? projectId = null,
+    ChatContext? chatContext = null,
+    string? userId = null,
+    ProviderConfig? providerConfig = null)
+  {
+    HttpResponseMessage response = await SendCompletionRequestAsync(
+      prompt: prompt,
+      projectId: projectId,
+      chatContext: chatContext,
+      userId: userId,
+      providerConfig: providerConfig,
+      stream: true
+    );
+
+    if (!response.IsSuccessStatusCode)
+    {
+      JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
+      throw new CommonbaseException(
+        response,
+        json.Value<string>("error"),
+        json.Value<string>("invocationId")
+      );
+    }
+
+    using var stream = await response.Content.ReadAsStreamAsync();
+    using var reader = new StreamReader(stream);
+    var consumer = StreamConsumer.ConsumeAsync(reader);
+
+    await foreach (var result in consumer)
+    {
+      yield return result;
+    }
+  }
 }

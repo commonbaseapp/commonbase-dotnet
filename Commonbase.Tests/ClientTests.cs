@@ -56,4 +56,19 @@ public class ClientTests
 
     Assert.Contains("germany", result.BestResult.ToLower());
   }
+
+  [Fact]
+  public async void StreamCompletion()
+  {
+    var responses = new List<CompletionResponse?>();
+
+    await foreach (var result in Client.StreamCompletionAsync(
+      prompt: "Write me a short essay about artificial intelligence."
+    ))
+    {
+      responses.Add(result);
+    }
+
+    Assert.True(responses.Count > 0);
+  }
 }
