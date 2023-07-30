@@ -4,10 +4,25 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>Commonbase</PackageId>
+    <Title>Commonbase Client for .NET</Title>
+    <Company>Commonbase Inc.</Company>
+    <Copyright>Commonbase Inc.</Copyright>
+    <PackageProjectUrl>https://github.com/commonbaseapp/commonbase-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/commonbaseapp/commonbase-dotnet</RepositoryUrl>
+    <PackageVersion>0.0.0</PackageVersion>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
