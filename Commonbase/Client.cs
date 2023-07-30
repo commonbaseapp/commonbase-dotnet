@@ -11,7 +11,7 @@ public class CommonbaseClient
   private HttpClient HttpClient;
 
   private ClientOptions clientOptions;
-  public CommonbaseClient(ClientOptions? options)
+  public CommonbaseClient(ClientOptions? options = null)
   {
     clientOptions = options ?? new ClientOptions();
     HttpClient = new HttpClient();

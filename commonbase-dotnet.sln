@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commonbase", "Commonbase\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commonbase.Tests", "Commonbase.Tests\Commonbase.Tests.csproj", "{661B209D-9394-4781-BEF2-F2E8300D1CCD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commonbase.Examples", "Commonbase.Examples\Commonbase.Examples.csproj", "{AFF27DF3-5734-4BCA-9E10-0F8E974D54CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{661B209D-9394-4781-BEF2-F2E8300D1CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{661B209D-9394-4781-BEF2-F2E8300D1CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{661B209D-9394-4781-BEF2-F2E8300D1CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFF27DF3-5734-4BCA-9E10-0F8E974D54CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFF27DF3-5734-4BCA-9E10-0F8E974D54CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFF27DF3-5734-4BCA-9E10-0F8E974D54CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFF27DF3-5734-4BCA-9E10-0F8E974D54CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
