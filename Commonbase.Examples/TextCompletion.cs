@@ -1,4 +1,3 @@
-
 namespace Commonbase.Examples;
 
 public static class TextCompletionExample
@@ -8,24 +7,18 @@ public static class TextCompletionExample
     CommonbaseClient client = new();
     string prompt = "Hello, what is your name?";
 
+    Console.WriteLine("\n=======================================================");
+    Console.WriteLine("Text Completion");
+    Console.WriteLine("=======================================================");
+    Console.WriteLine("Prompt:");
+    Console.WriteLine($" > {prompt}");
+    Console.WriteLine("\nResponse:");
+
     var response = await client.CreateCompletionAsync(
       prompt,
       projectId: Program.CB_PROJECT_ID
     );
 
-    Console.WriteLine($@"
-Text Completion
-=======================================================
-Prompt:
--------------------------------------------------------
-{prompt}
--------------------------------------------------------
-
-Response:
--------------------------------------------------------
-{response.BestResult}
--------------------------------------------------------
-=======================================================
-");
+    Console.WriteLine(response.BestResult);
   }
 }

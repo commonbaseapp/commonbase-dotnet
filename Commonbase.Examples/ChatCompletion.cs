@@ -1,4 +1,3 @@
-
 namespace Commonbase.Examples;
 
 public static class ChatCompletionExample
@@ -14,6 +13,14 @@ public static class ChatCompletionExample
       new ChatMessage { Role = MessageRole.User, Content = "What country?" },
     };
 
+    Console.WriteLine("\n=======================================================");
+    Console.WriteLine("Chat Completion");
+    Console.WriteLine("=======================================================");
+    Console.WriteLine("Messages:");
+    Console.WriteLine($" > System: {systemMessage}");
+    Console.WriteLine(string.Join("\n", messages.Select(m => $" > {m}")));
+    Console.WriteLine("\nResponse:");
+
     var response = await client.CreateCompletionAsync(
       prompt: systemMessage,
       chatContext: new ChatContext() { Messages = messages },
@@ -28,20 +35,6 @@ public static class ChatCompletionExample
       }
     );
 
-    Console.WriteLine($@"
-Chat Completion
-=======================================================
-Messages:
--------------------------------------------------------
-System: {systemMessage}
-{string.Join("\n", messages.Select(m => m.ToString()))} 
--------------------------------------------------------
-
-Response:
--------------------------------------------------------
-{response.BestResult}
--------------------------------------------------------
-=======================================================
-");
+    Console.WriteLine(response.BestResult);
   }
 }

@@ -52,6 +52,7 @@ public class CommonbaseClient
     if (stream)
     {
       request.Headers.Add("Accept", "text/event-stream");
+      return await HttpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
     }
 
     return await HttpClient.SendAsync(request);
@@ -94,7 +95,7 @@ public class CommonbaseClient
     string? userId = null,
     ProviderConfig? providerConfig = null)
   {
-    HttpResponseMessage response = await SendCompletionRequestAsync(
+    using HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
       projectId: projectId,
       chatContext: chatContext,
