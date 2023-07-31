@@ -8,6 +8,16 @@ public record ClientOptions(string? ProjectId = null, string? ApiKey = null);
 
 public class CommonbaseClient
 {
+  private static readonly string ClientVersion;
+
+  static CommonbaseClient()
+  {
+    var version = typeof(CommonbaseClient).Assembly.GetName().Version;
+    ClientVersion = version is null
+      ? "0.0.0"
+      : $"{version.Major}.{version.Minor}.{version.Build}";
+  }
+
   private HttpClient HttpClient;
 
   private ClientOptions clientOptions;
@@ -48,6 +58,8 @@ public class CommonbaseClient
     );
 
     request.Content = body;
+
+    request.Headers.Add("User-Agent", $"commonbase-dotnet/{ClientVersion}");
 
     if (stream)
     {

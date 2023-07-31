@@ -39,7 +39,7 @@ jobs:
           allow-initial-development-versions: true
       - name: Set version number
         if: steps.semrel.outputs.version != ''
-        run: sed -i -e 's/PackageVersion>0.0.0</PackageVersion>${{ steps.semrel.outputs.version }}</g' Commonbase/Commonbase.csproj
+        run: sed -i -e 's/Version>0.0.0</Version>${{ steps.semrel.outputs.version }}</g' Commonbase/Commonbase.csproj
       - name: Build package
         if: steps.semrel.outputs.version != ''
         run: dotnet build -c Release
