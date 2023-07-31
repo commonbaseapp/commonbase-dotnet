@@ -1,0 +1,49 @@
+name: CI
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.x"
+      - name: Build package
+        run: dotnet build
+      - name: Run Tests
+        env:
+          CB_PROJECT_ID: ${{ secrets.CB_PROJECT_ID }}
+        run: dotnet test
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.x"
+      - uses: go-semantic-release/action@v1
+        id: semrel
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          allow-initial-development-versions: true
+      - name: Set version number
+        if: steps.semrel.outputs.version != ''
+        run: sed -i -e 's/PackageVersion>0.0.0</PackageVersion>${{ steps.semrel.outputs.version }}</g' Commonbase/Commonbase.csproj
+      - name: Build package
+        if: steps.semrel.outputs.version != ''
+        run: dotnet build -c Release
+      - name: Publish package
+        working-directory: ./Commonbase/bin/Release
+        if: steps.semrel.outputs.version != ''
+        run: dotnet nuget push Commonbase.${{ steps.semrel.outputs.version }}.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
