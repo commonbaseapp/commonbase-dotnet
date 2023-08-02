@@ -4,7 +4,8 @@ public static class TextCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new();
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
+
     string prompt = "Hello, what is your name?";
 
     Console.WriteLine("\n=======================================================");

@@ -16,24 +16,25 @@ dotnet package add Commonbase
 
 ## Usage
 
-A project ID is required for all Commonbase requests. You can find your project ID
-in the [Commonbase Dashboard](https://commonbase.com/).
+A Project ID and API Key are required for all Commonbase requests. You can find your Project ID
+and generate an API Key in the [Commonbase Dashboard](https://commonbase.com/).
 
-To create text and chat completions, use `CommonbaseClient.CreateCompletionAsync`:
+To create a completion, configure a `CommonbaseClient` with your API Key and provide your Project
+ID and prompt to `CreateCompletionAsync`:
 
 ```c#
 using Commonbase;
 
-CommonbaseClient client = new();
+CommonbaseClient client = new(apiKey: "API_KEY");
 
 var response = await client.CreateCompletionAsync(
   prompt: "Hello!",
-  projectId: "<your_project_id>"
+  projectId: "PROJECT_ID"
 );
 
 Console.WriteLine(response.BestResult);
 ```
 
-To stream a completion as it is generated, use `CommonbaseClient.StreamCompletionAsync`.
+To stream a completion as it is generated, use `StreamCompletionAsync`.
 
 For more examples, see [/Commonbase.Examples](https://github.com/commonbaseapp/commonbase-dotnet/tree/main/Commonbase.Examples).

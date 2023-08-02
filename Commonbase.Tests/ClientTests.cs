@@ -8,8 +8,17 @@ public class ClientTests
   {
     Client = new CommonbaseClient(new ClientOptions
     {
-      ProjectId = Environment.GetEnvironmentVariable("CB_PROJECT_ID")
+      ApiKey = Environment.GetEnvironmentVariable("CB_API_KEY")!,
+      ProjectId = Environment.GetEnvironmentVariable("CB_PROJECT_ID")!
     });
+  }
+
+  [Fact]
+  public void ShouldThrowArgumentExceptionOnNoApiKey()
+  {
+    Assert.Throws<ArgumentException>(
+      () => new CommonbaseClient(apiKey: "")
+    );
   }
 
   [Fact]

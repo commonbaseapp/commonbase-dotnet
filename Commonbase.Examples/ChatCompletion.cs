@@ -4,7 +4,7 @@ public static class ChatCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new();
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
 
     string systemMessage = "You help people with geography.";
     ChatMessage[] messages = new[] {
