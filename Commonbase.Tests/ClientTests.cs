@@ -80,4 +80,31 @@ public class ClientTests
 
     Assert.True(responses.Count > 0);
   }
+
+  [Fact]
+  public async void NoProviderApiKey()
+  {
+    await Assert.ThrowsAsync<CommonbaseException>(() => Client.CreateCompletionAsync(
+      prompt: "hello",
+      providerConfig: new OpenAIProviderConfig(new OpenAIParams
+      {
+        Type = RequestType.Chat
+      })
+    ));
+  }
+
+  [Fact]
+  public async void ValidProviderApiKey()
+  {
+    var response = await Client.CreateCompletionAsync(
+      prompt: "Hello!",
+      providerApiKey: Environment.GetEnvironmentVariable("CB_OPENAI_API_KEY"),
+      providerConfig: new OpenAIProviderConfig(new OpenAIParams
+      {
+        Type = RequestType.Chat
+      })
+    );
+
+    Assert.True(response.Choices.Count > 0);
+  }
 }

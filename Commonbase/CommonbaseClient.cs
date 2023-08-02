@@ -39,11 +39,12 @@ public class CommonbaseClient
 
   private async Task<HttpResponseMessage> SendCompletionRequestAsync(
     string prompt,
-    string? projectId = null,
-    ChatContext? chatContext = null,
-    string? userId = null,
-    ProviderConfig? providerConfig = null,
-    bool stream = false)
+    string? projectId,
+    ChatContext? chatContext,
+    string? userId,
+    string? providerApiKey,
+    ProviderConfig? providerConfig,
+    bool stream)
   {
     using StringContent body = new(
       JsonConvert.SerializeObject(new
@@ -72,6 +73,11 @@ public class CommonbaseClient
     request.Headers.Add("Authorization", clientOptions.ApiKey);
     request.Headers.Add("User-Agent", $"commonbase-dotnet/{ClientVersion}");
 
+    if (!string.IsNullOrWhiteSpace(providerApiKey))
+    {
+      request.Headers.Add("Provider-API-Key", providerApiKey);
+    }
+
     if (stream)
     {
       request.Headers.Add("Accept", "text/event-stream");
@@ -86,6 +92,7 @@ public class CommonbaseClient
     string? projectId = null,
     ChatContext? chatContext = null,
     string? userId = null,
+    string? providerApiKey = null,
     ProviderConfig? providerConfig = null)
   {
     HttpResponseMessage response = await SendCompletionRequestAsync(
@@ -93,6 +100,7 @@ public class CommonbaseClient
       projectId: projectId,
       chatContext: chatContext,
       userId: userId,
+      providerApiKey: providerApiKey,
       providerConfig: providerConfig,
       stream: false
     );
@@ -116,6 +124,7 @@ public class CommonbaseClient
     string? projectId = null,
     ChatContext? chatContext = null,
     string? userId = null,
+    string? providerApiKey = null,
     ProviderConfig? providerConfig = null)
   {
     using HttpResponseMessage response = await SendCompletionRequestAsync(
@@ -123,6 +132,7 @@ public class CommonbaseClient
       projectId: projectId,
       chatContext: chatContext,
       userId: userId,
+      providerApiKey: providerApiKey,
       providerConfig: providerConfig,
       stream: true
     );
