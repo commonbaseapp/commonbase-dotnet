@@ -4,7 +4,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Commonbase;
 
-public record ClientOptions(string? ProjectId = null, string? ApiKey = null);
+public record ClientOptions
+{
+  public required string ApiKey { get; init; }
+  public string? ProjectId { get; init; }
+}
 
 public class CommonbaseClient
 {
@@ -21,9 +25,15 @@ public class CommonbaseClient
   private HttpClient HttpClient;
 
   private ClientOptions clientOptions;
-  public CommonbaseClient(ClientOptions? options = null)
+  public CommonbaseClient(string apiKey) : this(new ClientOptions { ApiKey = apiKey }) { }
+  public CommonbaseClient(ClientOptions options)
   {
-    clientOptions = options ?? new ClientOptions();
+    if (string.IsNullOrWhiteSpace(options.ApiKey))
+    {
+      throw new ArgumentException("Api Key must not be null or empty.", nameof(options.ApiKey));
+    }
+
+    clientOptions = options;
     HttpClient = new HttpClient();
   }
 
@@ -59,6 +69,7 @@ public class CommonbaseClient
 
     request.Content = body;
 
+    request.Headers.Add("Authorization", clientOptions.ApiKey);
     request.Headers.Add("User-Agent", $"commonbase-dotnet/{ClientVersion}");
 
     if (stream)

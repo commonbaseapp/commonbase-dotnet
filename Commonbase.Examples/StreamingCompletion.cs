@@ -4,7 +4,8 @@ public static class StreamingCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new();
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
+
     string prompt = "Write me an essay about artificial intelligence.";
 
     var stream = client.StreamCompletionAsync(
