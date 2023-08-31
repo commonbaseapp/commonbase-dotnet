@@ -4,7 +4,7 @@ public static class ChatCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!, projectId: Program.CB_PROJECT_ID);
 
     ChatMessage[] messages = new[] {
       new ChatMessage { Role = MessageRole.System, Content = "You help people with geography." },
@@ -22,7 +22,6 @@ public static class ChatCompletionExample
 
     var response = await client.CreateChatCompletionAsync(
       messages: messages,
-      projectId: Program.CB_PROJECT_ID,
       providerConfig: new CbOpenAIProviderConfig
       {
         Region = CbOpenAIRegion.EU,
@@ -33,6 +32,6 @@ public static class ChatCompletionExample
       }
     );
 
-    Console.WriteLine(response.BestResult);
+    Console.WriteLine(response.BestChoice.Text);
   }
 }

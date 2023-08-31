@@ -20,5 +20,6 @@ public class Program
     await TextCompletionExample.RunAsync();
     await ChatCompletionExample.RunAsync();
     await StreamingCompletionExample.RunAsync();
+    await FunctionsExample.RunAsync();
   }
 }

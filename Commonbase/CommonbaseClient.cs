@@ -25,7 +25,8 @@ public class CommonbaseClient
   private HttpClient HttpClient;
 
   private ClientOptions clientOptions;
-  public CommonbaseClient(string apiKey) : this(new ClientOptions { ApiKey = apiKey }) { }
+  public CommonbaseClient(string apiKey, string? projectId = null)
+    : this(new ClientOptions { ApiKey = apiKey, ProjectId = projectId }) { }
   public CommonbaseClient(ClientOptions options)
   {
     if (string.IsNullOrWhiteSpace(options.ApiKey))
@@ -40,6 +41,8 @@ public class CommonbaseClient
   private async Task<HttpResponseMessage> SendCompletionRequestAsync(
     string? prompt,
     IEnumerable<ChatMessage>? messages,
+    IEnumerable<ChatFunction>? functions,
+    string? functionCall,
     string? projectId,
     string? userId,
     string? providerApiKey,
@@ -56,6 +59,10 @@ public class CommonbaseClient
         userId = userId,
         providerConfig = providerConfig,
         stream = stream,
+        functions = functions,
+        functionCall = functionCall is null or "none" or "auto"
+          ? functionCall as object
+          : new { name = functionCall }
       },
         new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }
       ),
@@ -97,6 +104,8 @@ public class CommonbaseClient
     HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
       messages: null,
+      functions: null,
+      functionCall: null,
       projectId: projectId,
       userId: userId,
       providerApiKey: providerApiKey,
@@ -128,6 +137,8 @@ public class CommonbaseClient
     using HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
       messages: null,
+      functions: null,
+      functionCall: null,
       projectId: projectId,
       userId: userId,
       providerApiKey: providerApiKey,
@@ -158,6 +169,8 @@ public class CommonbaseClient
 
   public async Task<CompletionResponse> CreateChatCompletionAsync(
     IEnumerable<ChatMessage> messages,
+    IEnumerable<ChatFunction>? functions = null,
+    string? functionCall = null,
     string? projectId = null,
     string? userId = null,
     string? providerApiKey = null,
@@ -166,6 +179,8 @@ public class CommonbaseClient
     HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: null,
       messages: messages,
+      functions: functions,
+      functionCall: functionCall,
       projectId: projectId,
       userId: userId,
       providerApiKey: providerApiKey,
@@ -189,6 +204,8 @@ public class CommonbaseClient
 
   public async IAsyncEnumerable<CompletionResponse> StreamChatCompletionAsync(
     IEnumerable<ChatMessage> messages,
+    IEnumerable<ChatFunction>? functions = null,
+    string? functionCall = null,
     string? projectId = null,
     string? userId = null,
     string? providerApiKey = null,
@@ -197,6 +214,8 @@ public class CommonbaseClient
     using HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: null,
       messages: messages,
+      functions: functions,
+      functionCall: functionCall,
       projectId: projectId,
       userId: userId,
       providerApiKey: providerApiKey,

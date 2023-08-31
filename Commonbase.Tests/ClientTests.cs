@@ -1,3 +1,6 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace Commonbase.Tests;
 
 public class ClientTests
@@ -6,11 +9,10 @@ public class ClientTests
 
   public ClientTests()
   {
-    Client = new CommonbaseClient(new ClientOptions
-    {
-      ApiKey = Environment.GetEnvironmentVariable("CB_API_KEY")!,
-      ProjectId = Environment.GetEnvironmentVariable("CB_PROJECT_ID")!
-    });
+    Client = new CommonbaseClient(
+      apiKey: Environment.GetEnvironmentVariable("CB_API_KEY")!,
+      projectId: Environment.GetEnvironmentVariable("CB_PROJECT_ID")!
+    );
   }
 
   [Fact]
@@ -60,7 +62,7 @@ public class ClientTests
         }
       });
 
-    Assert.Contains("germany", result.BestResult.ToLower());
+    Assert.Contains("germany", result.BestChoice.Text.ToLower());
   }
 
   [Fact]
@@ -103,5 +105,81 @@ public class ClientTests
     );
 
     Assert.True(response.Choices.Count > 0);
+  }
+
+  [Fact]
+  public async void Functions()
+  {
+    List<ChatMessage> messages = new() {
+      new ChatMessage { Role = MessageRole.User, Content = "What's the weather like in Boston?" }
+    };
+
+    var response = await Client.CreateChatCompletionAsync(
+      messages: messages,
+      functions: new[] {
+        new ChatFunction {
+          Name = "get_current_weather",
+          Description = "Get the current weather in a given location",
+          Parameters = new {
+            type = "object",
+            properties = new {
+              location = new {
+                type = "string",
+                description = "The city and state, e.g., San Francisco, CA"
+              },
+              unit = new Dictionary<string, object> {
+                { "type", "string" },
+                { "enum", new [] { "celsius", "fahrenheit" } }
+              }
+            },
+            required = new [] { "location" }
+          }
+        },
+      },
+      providerConfig: new CbOpenAIProviderConfig
+      {
+        Region = CbOpenAIRegion.US,
+        Params = new()
+        {
+          Type = RequestType.Chat,
+          Model = "gpt-4"
+        }
+      }
+    );
+
+    Assert.NotNull(response.BestChoice.FunctionCall);
+
+    string functionName = response.BestChoice.FunctionCall.Name;
+
+    Assert.Equal("get_current_weather", functionName);
+
+    var functionArguments = JsonConvert.DeserializeObject<JObject>(response.BestChoice.FunctionCall.Arguments!)!;
+    var location = functionArguments.Value<string>("location")!;
+    var unit = functionArguments.Value<string>("unit")!;
+
+    Assert.Contains("boston", location.ToLower());
+
+    var functionResponse = new
+    {
+      location,
+      unit = unit ?? "fahrenheit",
+      temperature = 72,
+      forecast = new[] { "sunny", "windy" }
+    };
+
+    messages.Add(response.BestChoice.ToAssistantChatMessage());
+
+    messages.Add(new ChatMessage
+    {
+      Role = MessageRole.Function,
+      Name = functionName,
+      Content = JsonConvert.SerializeObject(functionResponse)
+    });
+
+    var secondResponse = await Client.CreateChatCompletionAsync(
+      messages
+    );
+
+    Assert.False(string.IsNullOrWhiteSpace(secondResponse.BestChoice.Text));
   }
 }

@@ -19,13 +19,17 @@ public record OpenAIProviderConfig : ProviderConfig
 
 public enum CbOpenAIRegion
 {
-  EU
+  Multi,
+  EU,
+  US
 }
 
 public record CbOpenAIProviderConfig : ProviderConfig
 {
+  [JsonIgnore]
   public required CbOpenAIRegion Region { get; init; }
-  public override string ProviderName => $"cb-openai-{Region.ToString().ToLower()}";
+
+  public override string ProviderName => Region is CbOpenAIRegion.Multi ? "cb-openai" : $"cb-openai-{Region.ToString().ToLower()}";
 
   [JsonProperty("params")]
   public OpenAIParams? Params { get; init; }
