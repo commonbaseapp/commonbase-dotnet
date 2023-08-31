@@ -38,9 +38,9 @@ public class CommonbaseClient
   }
 
   private async Task<HttpResponseMessage> SendCompletionRequestAsync(
-    string prompt,
+    string? prompt,
+    IEnumerable<ChatMessage>? messages,
     string? projectId,
-    ChatContext? chatContext,
     string? userId,
     string? providerApiKey,
     ProviderConfig? providerConfig,
@@ -52,7 +52,7 @@ public class CommonbaseClient
         projectId = projectId ?? clientOptions.ProjectId,
         prompt = prompt,
         apiKey = clientOptions.ApiKey,
-        context = chatContext,
+        messages = messages,
         userId = userId,
         providerConfig = providerConfig,
         stream = stream,
@@ -90,15 +90,14 @@ public class CommonbaseClient
   public async Task<CompletionResponse> CreateCompletionAsync(
     string prompt,
     string? projectId = null,
-    ChatContext? chatContext = null,
     string? userId = null,
     string? providerApiKey = null,
     ProviderConfig? providerConfig = null)
   {
     HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
+      messages: null,
       projectId: projectId,
-      chatContext: chatContext,
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,
@@ -122,15 +121,83 @@ public class CommonbaseClient
   public async IAsyncEnumerable<CompletionResponse> StreamCompletionAsync(
     string prompt,
     string? projectId = null,
-    ChatContext? chatContext = null,
     string? userId = null,
     string? providerApiKey = null,
     ProviderConfig? providerConfig = null)
   {
     using HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
+      messages: null,
       projectId: projectId,
-      chatContext: chatContext,
+      userId: userId,
+      providerApiKey: providerApiKey,
+      providerConfig: providerConfig,
+      stream: true
+    );
+
+    if (!response.IsSuccessStatusCode)
+    {
+      JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
+      throw new CommonbaseException(
+        response,
+        json.Value<string>("error"),
+        json.Value<string>("invocationId")
+      );
+    }
+
+    using var stream = await response.Content.ReadAsStreamAsync();
+    using var reader = new StreamReader(stream);
+    var consumer = StreamConsumer.ConsumeAsync(reader);
+
+    await foreach (var result in consumer)
+    {
+      yield return result;
+    }
+  }
+
+
+  public async Task<CompletionResponse> CreateChatCompletionAsync(
+    IEnumerable<ChatMessage> messages,
+    string? projectId = null,
+    string? userId = null,
+    string? providerApiKey = null,
+    ProviderConfig? providerConfig = null)
+  {
+    HttpResponseMessage response = await SendCompletionRequestAsync(
+      prompt: null,
+      messages: messages,
+      projectId: projectId,
+      userId: userId,
+      providerApiKey: providerApiKey,
+      providerConfig: providerConfig,
+      stream: false
+    );
+
+    JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+    if (!response.IsSuccessStatusCode)
+    {
+      throw new CommonbaseException(
+        response,
+        json.Value<string>("error"),
+        json.Value<string>("invocationId")
+      );
+    }
+
+    return json.ToObject<CompletionResponse>()!;
+  }
+
+  public async IAsyncEnumerable<CompletionResponse> StreamChatCompletionAsync(
+    IEnumerable<ChatMessage> messages,
+    string? projectId = null,
+    string? userId = null,
+    string? providerApiKey = null,
+    ProviderConfig? providerConfig = null)
+  {
+    using HttpResponseMessage response = await SendCompletionRequestAsync(
+      prompt: null,
+      messages: messages,
+      projectId: projectId,
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,

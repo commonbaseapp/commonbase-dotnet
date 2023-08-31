@@ -42,18 +42,15 @@ public class ClientTests
   [Fact]
   public async void ChatCompletion()
   {
-    var context = new ChatContext
-    {
-      Messages = new[] {
-        new ChatMessage { Role = MessageRole.User, Content = "Where is Berlin located?" },
-        new ChatMessage { Role = MessageRole.Assistant, Content = "In the EU." },
-        new ChatMessage { Role = MessageRole.User, Content = "What country?" },
-      }
+    var messages = new[] {
+      new ChatMessage { Role = MessageRole.System, Content = "You help people with geography" },
+      new ChatMessage { Role = MessageRole.User, Content = "Where is Berlin located?" },
+      new ChatMessage { Role = MessageRole.Assistant, Content = "In the EU." },
+      new ChatMessage { Role = MessageRole.User, Content = "What country?" },
     };
 
-    var result = await Client.CreateCompletionAsync(
-      prompt: "You help people with geography",
-      chatContext: context,
+    var result = await Client.CreateChatCompletionAsync(
+      messages: messages,
       providerConfig: new CbOpenAIProviderConfig
       {
         Region = CbOpenAIRegion.EU,
@@ -78,7 +75,7 @@ public class ClientTests
       responses.Add(result);
     }
 
-    Assert.True(responses.Count > 0);
+    Assert.True(responses.Count > 1);
   }
 
   [Fact]

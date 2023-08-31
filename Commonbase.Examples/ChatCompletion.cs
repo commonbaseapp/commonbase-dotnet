@@ -6,8 +6,8 @@ public static class ChatCompletionExample
   {
     CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
 
-    string systemMessage = "You help people with geography.";
     ChatMessage[] messages = new[] {
+      new ChatMessage { Role = MessageRole.System, Content = "You help people with geography." },
       new ChatMessage { Role = MessageRole.User, Content = "Where is Berlin located?" },
       new ChatMessage { Role = MessageRole.Assistant, Content = "In the EU." },
       new ChatMessage { Role = MessageRole.User, Content = "What country?" },
@@ -17,13 +17,11 @@ public static class ChatCompletionExample
     Console.WriteLine("Chat Completion");
     Console.WriteLine("=======================================================");
     Console.WriteLine("Messages:");
-    Console.WriteLine($" > System: {systemMessage}");
     Console.WriteLine(string.Join("\n", messages.Select(m => $" > {m}")));
     Console.WriteLine("\nResponse:");
 
-    var response = await client.CreateCompletionAsync(
-      prompt: systemMessage,
-      chatContext: new ChatContext() { Messages = messages },
+    var response = await client.CreateChatCompletionAsync(
+      messages: messages,
       projectId: Program.CB_PROJECT_ID,
       providerConfig: new CbOpenAIProviderConfig
       {
