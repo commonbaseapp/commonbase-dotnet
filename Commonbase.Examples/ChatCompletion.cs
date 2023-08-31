@@ -21,8 +21,7 @@ public static class ChatCompletionExample
     Console.WriteLine("\nResponse:");
 
     var response = await client.CreateChatCompletionAsync(
-      messages: messages,
-      providerConfig: new CbOpenAIProviderConfig(CbOpenAIRegion.EU)
+      messages: messages
     );
 
     Console.WriteLine(response.BestChoice.Text);
