@@ -6,15 +6,15 @@ namespace Commonbase;
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record OpenAIProviderConfig : ProviderConfig
 {
-  public OpenAIProviderConfig(OpenAIParams? p)
+  public OpenAIProviderConfig(OpenAIParams? parameters = null)
   {
-    Params = p;
+    Params = parameters ?? new OpenAIParams();
   }
 
   public override string ProviderName => "openai";
 
   [JsonProperty("params")]
-  public OpenAIParams? Params { get; init; }
+  public OpenAIParams Params { get; }
 }
 
 public enum CbOpenAIRegion
@@ -24,15 +24,17 @@ public enum CbOpenAIRegion
   US
 }
 
-public record CbOpenAIProviderConfig : ProviderConfig
+public record CbOpenAIProviderConfig : OpenAIProviderConfig
 {
   [JsonIgnore]
-  public required CbOpenAIRegion Region { get; init; }
+  public CbOpenAIRegion Region { get; }
 
   public override string ProviderName => Region is CbOpenAIRegion.Multi ? "cb-openai" : $"cb-openai-{Region.ToString().ToLower()}";
 
-  [JsonProperty("params")]
-  public OpenAIParams? Params { get; init; }
+  public CbOpenAIProviderConfig(CbOpenAIRegion region, OpenAIParams? parameters = null) : base(parameters)
+  {
+    Region = region;
+  }
 }
 
 
@@ -40,7 +42,7 @@ public record CbOpenAIProviderConfig : ProviderConfig
 public record OpenAIParams
 {
   [JsonProperty("type")]
-  public required RequestType Type { get; init; }
+  internal RequestType Type { get; set; }
 
   [JsonProperty("model")]
   public string? Model { get; init; }

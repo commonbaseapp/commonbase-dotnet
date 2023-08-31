@@ -53,15 +53,10 @@ public static class FunctionsExample
           }
         },
       },
-      providerConfig: new CbOpenAIProviderConfig
+      providerConfig: new CbOpenAIProviderConfig(CbOpenAIRegion.US, new OpenAIParams
       {
-        Region = CbOpenAIRegion.US,
-        Params = new()
-        {
-          Type = RequestType.Chat,
-          Model = "gpt-4"
-        }
-      }
+        Model = "gpt-4"
+      })
     );
 
     if (response.BestChoice.FunctionCall is not null)

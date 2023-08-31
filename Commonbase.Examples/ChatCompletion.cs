@@ -22,14 +22,7 @@ public static class ChatCompletionExample
 
     var response = await client.CreateChatCompletionAsync(
       messages: messages,
-      providerConfig: new CbOpenAIProviderConfig
-      {
-        Region = CbOpenAIRegion.EU,
-        Params = new()
-        {
-          Type = RequestType.Chat
-        }
-      }
+      providerConfig: new CbOpenAIProviderConfig(CbOpenAIRegion.EU)
     );
 
     Console.WriteLine(response.BestChoice.Text);

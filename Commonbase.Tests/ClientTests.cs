@@ -52,15 +52,8 @@ public class ClientTests
     };
 
     var result = await Client.CreateChatCompletionAsync(
-      messages: messages,
-      providerConfig: new CbOpenAIProviderConfig
-      {
-        Region = CbOpenAIRegion.EU,
-        Params = new OpenAIParams
-        {
-          Type = RequestType.Chat
-        }
-      });
+      messages: messages
+    );
 
     Assert.Contains("germany", result.BestChoice.Text.ToLower());
   }
@@ -85,10 +78,7 @@ public class ClientTests
   {
     await Assert.ThrowsAsync<CommonbaseException>(() => Client.CreateCompletionAsync(
       prompt: "hello",
-      providerConfig: new OpenAIProviderConfig(new OpenAIParams
-      {
-        Type = RequestType.Chat
-      })
+      providerConfig: new OpenAIProviderConfig()
     ));
   }
 
@@ -97,11 +87,7 @@ public class ClientTests
   {
     var response = await Client.CreateCompletionAsync(
       prompt: "Hello!",
-      providerApiKey: Environment.GetEnvironmentVariable("CB_OPENAI_API_KEY"),
-      providerConfig: new OpenAIProviderConfig(new OpenAIParams
-      {
-        Type = RequestType.Chat
-      })
+      providerApiKey: Environment.GetEnvironmentVariable("CB_OPENAI_API_KEY")
     );
 
     Assert.True(response.Choices.Count > 0);
@@ -136,15 +122,10 @@ public class ClientTests
           }
         },
       },
-      providerConfig: new CbOpenAIProviderConfig
+      providerConfig: new CbOpenAIProviderConfig(CbOpenAIRegion.US, new OpenAIParams
       {
-        Region = CbOpenAIRegion.US,
-        Params = new()
-        {
-          Type = RequestType.Chat,
-          Model = "gpt-4"
-        }
-      }
+        Model = "gpt-4"
+      })
     );
 
     Assert.NotNull(response.BestChoice.FunctionCall);

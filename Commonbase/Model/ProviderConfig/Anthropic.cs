@@ -6,7 +6,7 @@ namespace Commonbase;
 public record AnthropicParams
 {
   [JsonProperty("type")]
-  public required RequestType Type { get; init; }
+  internal RequestType Type => RequestType.Chat;
 
   [JsonProperty("model")]
   public string? Model { get; init; }
@@ -30,18 +30,13 @@ public record AnthropicParams
 [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
 public record AnthropicProviderConfig : ProviderConfig
 {
-  public AnthropicProviderConfig(AnthropicParams? p)
+  public AnthropicProviderConfig(AnthropicParams? parameters = null)
   {
-    if (p is not null && p.Type != RequestType.Chat)
-    {
-      throw new ArgumentException("Anthropic provider only supports request type 'chat'");
-    }
-
-    Params = p;
+    Params = parameters;
   }
 
   public override string ProviderName => "anthropic";
 
   [JsonProperty("params")]
-  public AnthropicParams? Params { get; init; }
+  public AnthropicParams? Params { get; }
 }

@@ -47,8 +47,15 @@ public class CommonbaseClient
     string? userId,
     string? providerApiKey,
     ProviderConfig? providerConfig,
-    bool stream)
+    bool stream,
+    RequestType type)
   {
+    providerConfig ??= new CbOpenAIProviderConfig(CbOpenAIRegion.EU);
+    if (providerConfig is OpenAIProviderConfig openAiConfig)
+    {
+      openAiConfig.Params.Type = type;
+    }
+
     using StringContent body = new(
       JsonConvert.SerializeObject(new
       {
@@ -99,7 +106,7 @@ public class CommonbaseClient
     string? projectId = null,
     string? userId = null,
     string? providerApiKey = null,
-    ProviderConfig? providerConfig = null)
+    OpenAIProviderConfig? providerConfig = null)
   {
     HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
@@ -110,7 +117,8 @@ public class CommonbaseClient
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,
-      stream: false
+      stream: false,
+      type: RequestType.Text
     );
 
     JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -132,7 +140,7 @@ public class CommonbaseClient
     string? projectId = null,
     string? userId = null,
     string? providerApiKey = null,
-    ProviderConfig? providerConfig = null)
+    OpenAIProviderConfig? providerConfig = null)
   {
     using HttpResponseMessage response = await SendCompletionRequestAsync(
       prompt: prompt,
@@ -143,7 +151,8 @@ public class CommonbaseClient
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,
-      stream: true
+      stream: true,
+      type: RequestType.Text
     );
 
     if (!response.IsSuccessStatusCode)
@@ -185,7 +194,8 @@ public class CommonbaseClient
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,
-      stream: false
+      stream: false,
+      type: RequestType.Chat
     );
 
     JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -220,7 +230,8 @@ public class CommonbaseClient
       userId: userId,
       providerApiKey: providerApiKey,
       providerConfig: providerConfig,
-      stream: true
+      stream: true,
+      type: RequestType.Chat
     );
 
     if (!response.IsSuccessStatusCode)
