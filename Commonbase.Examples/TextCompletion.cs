@@ -4,7 +4,7 @@ public static class TextCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!, projectId: Program.CB_PROJECT_ID);
 
     string prompt = "Hello, what is your name?";
 
@@ -16,10 +16,9 @@ public static class TextCompletionExample
     Console.WriteLine("\nResponse:");
 
     var response = await client.CreateCompletionAsync(
-      prompt,
-      projectId: Program.CB_PROJECT_ID
+      prompt
     );
 
-    Console.WriteLine(response.BestResult);
+    Console.WriteLine(response.BestChoice.Text);
   }
 }

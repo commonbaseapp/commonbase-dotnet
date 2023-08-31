@@ -4,10 +4,10 @@ public static class ChatCompletionExample
 {
   public static async Task RunAsync()
   {
-    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!);
+    CommonbaseClient client = new(apiKey: Program.CB_API_KEY!, projectId: Program.CB_PROJECT_ID);
 
-    string systemMessage = "You help people with geography.";
     ChatMessage[] messages = new[] {
+      new ChatMessage { Role = MessageRole.System, Content = "You help people with geography." },
       new ChatMessage { Role = MessageRole.User, Content = "Where is Berlin located?" },
       new ChatMessage { Role = MessageRole.Assistant, Content = "In the EU." },
       new ChatMessage { Role = MessageRole.User, Content = "What country?" },
@@ -17,24 +17,13 @@ public static class ChatCompletionExample
     Console.WriteLine("Chat Completion");
     Console.WriteLine("=======================================================");
     Console.WriteLine("Messages:");
-    Console.WriteLine($" > System: {systemMessage}");
     Console.WriteLine(string.Join("\n", messages.Select(m => $" > {m}")));
     Console.WriteLine("\nResponse:");
 
-    var response = await client.CreateCompletionAsync(
-      prompt: systemMessage,
-      chatContext: new ChatContext() { Messages = messages },
-      projectId: Program.CB_PROJECT_ID,
-      providerConfig: new CbOpenAIProviderConfig
-      {
-        Region = CbOpenAIRegion.EU,
-        Params = new()
-        {
-          Type = RequestType.Chat
-        }
-      }
+    var response = await client.CreateChatCompletionAsync(
+      messages: messages
     );
 
-    Console.WriteLine(response.BestResult);
+    Console.WriteLine(response.BestChoice.Text);
   }
 }

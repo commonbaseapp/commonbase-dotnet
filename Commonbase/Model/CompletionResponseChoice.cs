@@ -19,4 +19,17 @@ public record CompletionResponseChoice
 
   [JsonProperty("logprobs")]
   public int? Logprobs { get; init; }
+
+  [JsonProperty("function_call")]
+  public FunctionCall? FunctionCall { get; init; }
+
+  public ChatMessage ToAssistantChatMessage()
+  {
+    return new ChatMessage
+    {
+      Role = MessageRole.Assistant,
+      Content = Text,
+      FunctionCall = FunctionCall
+    };
+  }
 }

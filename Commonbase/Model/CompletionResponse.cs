@@ -23,5 +23,5 @@ public record CompletionResponse
   public required IReadOnlyList<CompletionResponseChoice> Choices { get; init; }
 
   [JsonIgnore]
-  public string BestResult => Choices.FirstOrDefault()?.Text ?? string.Empty;
+  public CompletionResponseChoice BestChoice => Choices.FirstOrDefault() ?? new CompletionResponseChoice { Text = "" };
 }

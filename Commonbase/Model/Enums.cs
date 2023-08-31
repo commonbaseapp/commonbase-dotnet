@@ -27,5 +27,8 @@ public enum MessageRole
   User,
 
   [EnumMember(Value = "assistant")]
-  Assistant
+  Assistant,
+
+  [EnumMember(Value = "function")]
+  Function
 }
